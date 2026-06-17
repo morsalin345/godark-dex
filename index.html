@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ walletConnected: false, walletAddress: '', showSwapModal: false, fromToken: 'SOL', toToken: 'USDC', swapAmount: '', showWalletMenu: false }">
+<html lang="en" x-data="{ walletConnected: false, walletAddress: '', connectedWalletType: '', showSwapModal: false, showWalletListModal: false, fromToken: 'SOL', toToken: 'USDC', swapAmount: '', showWalletMenu: false, isSwapping: false, swapStep: '' }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoDark | Premium Privacy DEX</title>
     
-    <!-- Tailwind CSS & Google Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Alpine.js (For Dynamic UI States like Modals & Dropdowns) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for Interactive Privacy Simulator -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -39,45 +35,41 @@
             background-image: radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.1) 0, transparent 50%),
                               radial-gradient(at 100% 100%, rgba(0, 255, 102, 0.08) 0, transparent 50%);
         }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="text-gray-200 font-sans gradient-mesh min-h-screen antialiased">
 
-    <!-- PREMIUM NAVBAR -->
     <nav class="border-b border-gray-800/60 bg-darkBg/80 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl font-extrabold tracking-tight text-white">Go<span class="text-neonGreen">Dark</span></span>
+            <a href="https://godarkdex.com/" class="flex items-center space-x-2 group">
+                <span class="text-2xl font-extrabold tracking-tight text-white">Go<span class="text-neonGreen group-hover:text-white transition-colors">Dark</span></span>
                 <span class="bg-gray-900 text-xs text-neonGreen border border-neonGreen/30 px-2 py-0.5 rounded font-mono">BETA</span>
-            </div>
+            </a>
             
-            <!-- Navigation Links -->
             <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-400">
                 <a href="#swap-console" class="hover:text-white transition-colors">Swap</a>
                 <a href="#simulator" class="hover:text-white transition-colors">MEV Shield</a>
-                <a href="#features" class="hover:text-white transition-colors">Features</a>
-                <a href="#analytics" class="hover:text-white transition-colors">Stats</a>
             </div>
 
-            <!-- Dynamic Wallet Connection Button -->
             <div class="relative">
                 <template x-if="!walletConnected">
-                    <button @click="walletConnected = true; walletAddress = '4zMMC...9aX2r'" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
+                    <button @click="showWalletListModal = true" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
                         <i class="fa-solid fa-wallet"></i>
-                        <span>Connect Wallet</span>
+                        <span>Select Wallet</span>
                     </button>
                 </template>
                 <template x-if="walletConnected">
                     <button @click="showWalletMenu = !showWalletMenu" class="bg-darkCard border border-gray-700 text-white font-medium px-4 py-2.5 rounded-xl text-sm flex items-center space-x-2 hover:border-gray-500 transition-all">
                         <span class="w-2 h-2 rounded-full bg-neonGreen animate-pulse"></span>
+                        <span class="text-xs font-bold text-neonGreen uppercase mr-1" x-text="connectedWalletType"></span>
                         <span x-text="walletAddress"></span>
                         <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
                     </button>
                 </template>
                 
-                <!-- Disconnect Dropdown -->
                 <div x-show="showWalletMenu" @click.away="showWalletMenu = false" class="absolute right-0 mt-2 w-48 bg-darkCard border border-gray-800 rounded-xl p-2 shadow-2xl z-50" x-cloak>
-                    <button @click="walletConnected = false; showWalletMenu = false" class="w-full text-left text-sm text-red-400 hover:bg-red-500/10 p-2.5 rounded-lg transition-all flex items-center space-x-2">
+                    <button @click="disconnectSolanaWallet()" class="w-full text-left text-sm text-red-400 hover:bg-red-500/10 p-2.5 rounded-lg transition-all flex items-center space-x-2">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                         <span>Disconnect</span>
                     </button>
@@ -86,17 +78,15 @@
         </div>
     </nav>
 
-    <!-- HERO & INTERACTIVE SWAP CONSOLE -->
     <main class="max-w-7xl mx-auto px-6 pt-12 pb-24 grid lg:grid-cols-12 gap-12 items-center" id="swap-console">
         
-        <!-- Left Column: Copywriting -->
         <div class="lg:col-span-7 space-y-6">
             <div class="inline-flex items-center space-x-2 bg-neonGreen/10 border border-neonGreen/20 px-3 py-1 rounded-full text-xs text-neonGreen font-semibold">
                 <span class="w-1.5 h-1.5 rounded-full bg-neonGreen animate-ping"></span>
                 <span>Solana Next-Gen Dark Pool Engine</span>
             </div>
             <h1 class="text-4xl md:text-6xl font-black text-white leading-tight">
-                Trade in the Shadows.< <br>
+                Trade in the Shadows.<br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-neonGreen to-neonPurple">Protected by Default.</span>
             </h1>
             <p class="text-gray-400 text-lg max-w-xl">
@@ -109,36 +99,40 @@
             </div>
         </div>
 
-        <!-- Right Column: Functional Swap UI -->
         <div class="lg:col-span-5 bg-darkCard border border-gray-800/80 p-6 rounded-3xl glow-green relative">
+            
+            <div x-show="isSwapping" class="absolute inset-0 bg-darkCard/95 rounded-3xl z-30 flex flex-col items-center justify-center p-6 text-center" x-cloak>
+                <div class="w-16 h-16 border-4 border-neonGreen/20 border-t-neonGreen rounded-full animate-spin mb-6"></div>
+                <h3 class="text-xl font-bold text-white mb-2">Executing Private Trade</h3>
+                <p class="text-xs font-mono text-neonGreen px-4 py-1 bg-gray-950 border border-gray-800 rounded-full mb-4" x-text="swapStep"></p>
+                <p class="text-sm text-gray-400 max-w-xs">Please do not close this window. Your order is being matched in the off-chain dark pool and settled on Solana.</p>
+            </div>
+
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-lg font-bold text-white">Institutional Swap</h2>
                 <button class="text-gray-500 hover:text-white transition-colors text-sm"><i class="fa-solid fa-gear"></i></button>
             </div>
 
-            <!-- From Token Input -->
             <div class="bg-darkBg border border-gray-800 rounded-2xl p-4 space-y-2 mb-3">
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>You Pay</span>
                     <span>Balance: 12.45</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <input type="number" placeholder="0.00" x-model="swapAmount" class="bg-transparent text-2xl font-bold text-white focus:outline-none w-2/3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                    <button @click="showSwapModal = true" class="bg-gray-900 border border-gray-800 hover:border-gray-700 px-3 py-1.5 rounded-xl flex items-center space-x-2 text-sm font-bold text-white transition-all">
+                    <input type="number" placeholder="0.00" x-model="swapAmount" class="bg-transparent text-2xl font-bold text-white focus:outline-none w-2/3 [appearance:textfield]">
+                    <button @click="showSwapModal = true" class="bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-xl flex items-center space-x-2 text-sm font-bold text-white">
                         <span x-text="fromToken"></span>
                         <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Swap Switch Icon -->
             <div class="absolute left-1/2 transform -translate-x-1/2 -translate-y-5 z-10">
                 <button @click="let tmp = fromToken; fromToken = toToken; toToken = tmp;" class="bg-gray-900 border-2 border-gray-800 w-9 h-9 rounded-xl flex items-center justify-center text-neonGreen hover:text-white transition-all">
                     <i class="fa-solid fa-arrow-down-up-organizing text-xs"></i>
                 </button>
             </div>
 
-            <!-- To Token Input -->
             <div class="bg-darkBg border border-gray-800 rounded-2xl p-4 space-y-2 mt-4 mb-6">
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>You Receive (Estimated)</span>
@@ -152,7 +146,6 @@
                 </div>
             </div>
 
-            <!-- Routing Info -->
             <div class="space-y-2 text-xs text-gray-500 mb-6 px-1">
                 <div class="flex justify-between">
                     <span>Price Impact</span>
@@ -164,21 +157,55 @@
                 </div>
             </div>
 
-            <!-- Dynamic Action Button -->
             <template x-if="!walletConnected">
-                <button @click="walletConnected = true; walletAddress = '4zMMC...9aX2r'" class="w-full bg-neonGreen text-black font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center">
+                <button @click="showWalletListModal = true" class="w-full bg-neonGreen text-black font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center">
                     Connect Wallet to Trade
                 </button>
             </template>
             <template x-if="walletConnected">
-                <button @click="alert('Stealth order submitted to Dark Pool matching engine!')" class="w-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center tracking-wide">
+                <button @click="runLiveTransaction()" class="w-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center tracking-wide">
                     Execute Private Swap
                 </button>
             </template>
         </div>
     </main>
 
-    <!-- UNIQUE TOKEN SELECTOR MODAL (Alpine.js Controlled) -->
+    <div x-show="showWalletListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" x-cloak>
+        <div @click.away="showWalletListModal = false" class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-md p-6 space-y-5">
+            <div class="flex justify-between items-center border-b border-gray-800/60 pb-3">
+                <h3 class="text-lg font-bold text-white">Connect a Solana Wallet</h3>
+                <button @click="showWalletListModal = false" class="text-gray-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-2.5">
+                <button @click="connectSolanaWallet('phantom')" class="w-full bg-darkBg hover:bg-gray-900/50 border border-gray-800 hover:border-neonGreen/40 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://phantom.app/img/logo.v2.png" alt="Phantom" class="w-7 h-7 rounded-lg">
+                        <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Phantom Wallet</span>
+                    </div>
+                    <span class="text-xs bg-gray-900 text-gray-500 px-2 py-1 rounded border border-gray-800">Detected</span>
+                </button>
+
+                <button @click="connectSolanaWallet('solflare')" class="w-full bg-darkBg hover:bg-gray-900/50 border border-gray-800 hover:border-orange-500/40 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://solflare.com/assets/logo-icon.svg" alt="Solflare" class="w-7 h-7">
+                        <span class="font-bold text-white group-hover:text-orange-400 transition-colors">Solflare Wallet</span>
+                    </div>
+                    <span class="text-xs bg-gray-900 text-gray-500 px-2 py-1 rounded border border-gray-800">Available</span>
+                </button>
+
+                <button @click="connectSolanaWallet('backpack')" class="w-full bg-darkBg hover:bg-gray-900/50 border border-gray-800 hover:border-red-500/40 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-3">
+                        <img src="https://backpack.app/img/logo.png" alt="Backpack" class="w-7 h-7 rounded-lg">
+                        <span class="font-bold text-white group-hover:text-red-400 transition-colors">Backpack Wallet</span>
+                    </div>
+                    <span class="text-xs bg-gray-900 text-gray-500 px-2 py-1 rounded border border-gray-800">SPL-Support</span>
+                </button>
+            </div>
+            <p class="text-center text-xs text-gray-500">By connecting, you agree to GoDark's Terms of Service.</p>
+        </div>
+    </div>
+
     <div x-show="showSwapModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" x-cloak>
         <div @click.away="showSwapModal = false" class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-sm p-6 space-y-4">
             <div class="flex justify-between items-center">
@@ -188,28 +215,23 @@
             <div class="space-y-2">
                 <button @click="fromToken = 'SOL'; showSwapModal = false" class="w-full bg-darkBg hover:bg-gray-900 p-3 rounded-xl flex items-center justify-between text-left border border-gray-800 transition-all">
                     <span class="font-bold text-white">Solana (SOL)</span>
-                    <span class="text-xs text-gray-500">Native</span>
                 </button>
                 <button @click="fromToken = 'USDC'; showSwapModal = false" class="w-full bg-darkBg hover:bg-gray-900 p-3 rounded-xl flex items-center justify-between text-left border border-gray-800 transition-all">
                     <span class="font-bold text-white">USD Coin (USDC)</span>
-                    <span class="text-xs text-gray-500">SPL Token</span>
                 </button>
                 <button @click="fromToken = 'BONK'; showSwapModal = false" class="w-full bg-darkBg hover:bg-gray-900 p-3 rounded-xl flex items-center justify-between text-left border border-gray-800 transition-all">
                     <span class="font-bold text-white">Bonk (BONK)</span>
-                    <span class="text-xs text-gray-500">Meme</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- UNIQUE MEV SHIELD INTERACTIVE SIMULATOR (Chart.js Integration) -->
     <section class="max-w-5xl mx-auto px-6 py-16 border-t border-gray-900" id="simulator">
         <div class="text-center max-w-xl mx-auto mb-12">
             <span class="text-xs font-semibold uppercase text-neonGreen tracking-widest">Interactive Protection</span>
             <h2 class="text-3xl font-black text-white mt-2">See The MEV Shield In Action</h2>
             <p class="text-gray-400 text-sm mt-2">Public DEXs expose your trade size, making you prime target for bots. GoDark hides the order lifecycle entirely.</p>
         </div>
-
         <div class="grid md:grid-cols-12 gap-8 items-center bg-darkCard/40 border border-gray-900 p-8 rounded-3xl">
             <div class="md:col-span-5 space-y-6">
                 <div>
@@ -221,10 +243,9 @@
                         <span>$100K</span>
                     </div>
                 </div>
-
                 <div class="space-y-3 bg-darkBg border border-gray-800 p-4 rounded-2xl text-xs">
                     <div class="flex justify-between">
-                        <span class="text-red-400 font-medium"><i class="fa-solid fa-skull-crossbones mr-1"></i> Est. Public DEX Slippage Loss:</span>
+                        <span class="text-red-400 font-medium"><i class="fa-solid fa-skull-crossbones mr-1"></i> Public DEX Slippage:</span>
                         <span class="font-bold text-white font-mono" id="lossValue">-$350</span>
                     </div>
                     <div class="flex justify-between border-t border-gray-800/60 pt-2">
@@ -233,67 +254,113 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Live Updating Dynamic Chart -->
-            <div class="md:col-span-7 h-64">
+            <div class="md:col-span-7 h-48">
                 <canvas id="privacyChart"></canvas>
             </div>
         </div>
     </section>
 
-    <!-- SCRIPT FOR SIMULATOR CHART -->
-    <script>
-        const ctx = document.getElementById('privacyChart').getContext('2d');
-        let currentAmount = 50000;
-        
-        const privacyChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Public DEX (Exposed)', 'GoDark (Stealth Pool)'],
-                datasets: [{
-                    label: 'Slippage + MEV Bot Slippage ($ Saved)',
-                    data: [ (currentAmount * 0.007).toFixed(0), currentAmount ],
-                    backgroundColor: ['#ef4444', '#00ff66'],
-                    borderRadius: 12,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { display: false, grid: { display: false } },
-                    x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
-                }
-            }
-        });
-
-        document.getElementById('simulatorRange').addEventListener('input', function(e) {
-            const val = parseInt(e.target.value);
-            document.getElementById('rangeValue').innerText = '$' + val.toLocaleString();
-            
-            const dynamicLoss = (val * 0.007).toFixed(0);
-            document.getElementById('lossValue').innerText = '-$' + parseInt(dynamicLoss).toLocaleString();
-            
-            // Update chart dynamically
-            privacyChart.data.datasets[0].data = [dynamicLoss, val];
-            privacyChart.update();
-        });
-    </script>
-
-    <!-- FOOTER WITH COMMUNITY LINKS -->
     <footer class="border-t border-gray-900 bg-darkBg/60 px-6 py-12 text-center" id="analytics">
         <div class="max-w-7xl mx-auto space-y-6">
-            <span class="text-xl font-bold text-white tracking-wide block">Go<span class="text-neonGreen">Dark</span></span>
-            <div class="flex justify-center space-x-6 text-gray-500 text-lg">
-                <a href="#" class="hover:text-neonGreen transition-colors"><i class="fa-brands fa-telegram"></i></a>
-                <a href="#" class="hover:text-neonGreen transition-colors"><i class="fa-brands fa-discord"></i></a>
-                <a href="#" class="hover:text-neonGreen transition-colors"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://godarkdex.com/" class="text-xl font-bold text-white tracking-wide inline-block hover:text-neonGreen transition-colors">Go<span class="text-neonGreen">Dark</span></a>
+            
+            <div class="flex justify-center space-x-8 text-gray-500 text-xl">
+                <a href="https://t.me/godarkannouncements" target="_blank" rel="noopener noreferrer" class="hover:text-neonGreen transition-colors" title="Telegram Channel"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://discord.gg/godark" target="_blank" rel="noopener noreferrer" class="hover:text-neonGreen transition-colors" title="Discord Server"><i class="fa-brands fa-discord"></i></a>
+                <a href="https://x.com/GoDark" target="_blank" rel="noopener noreferrer" class="hover:text-neonGreen transition-colors" title="Twitter (X)"><i class="fa-brands fa-x-twitter"></i></a>
             </div>
             <p class="text-xs text-gray-600">&copy; 2026 GoDark Network Inc. All Rights Reserved.</p>
         </div>
     </footer>
 
+    <script>
+        // ১. মাল্টি ওয়ালেট কানেকশন স্ক্রিপ্ট
+        async function connectSolanaWallet(walletType) {
+            let provider = null;
+
+            if (walletType === 'phantom') {
+                provider = window.solana && window.solana.isPhantom ? window.solana : null;
+            } else if (walletType === 'solflare') {
+                provider = window.solflare;
+            } else if (walletType === 'backpack') {
+                provider = window.backpack;
+            }
+
+            if (provider) {
+                try {
+                    const response = await provider.connect();
+                    const pubKey = response.publicKey ? response.publicKey.toString() : response.toString();
+                    
+                    const shortAddress = pubKey.slice(0, 4) + "..." + pubKey.slice(-4);
+                    
+                    // Alpine.js ডাটা সিঙ্ক
+                    const data = document.querySelector('body').__x.$data;
+                    data.walletConnected = true;
+                    data.walletAddress = shortAddress;
+                    data.connectedWalletType = walletType;
+                    data.showWalletListModal = false;
+                } catch (err) {
+                    console.warn("Connection cancelled by user.");
+                }
+            } else {
+                alert(`${walletType.toUpperCase()} Wallet আপনার ব্রাউজারে পাওয়া যায়নি! দয়া করে এক্সটেনশনটি ইন্সটল করুন।`);
+                window.open(walletType === 'phantom' ? "https://phantom.app/" : "https://solflare.com/", "_blank");
+            }
+        }
+
+        function disconnectSolanaWallet() {
+            const data = document.querySelector('body').__x.$data;
+            data.walletConnected = false;
+            data.walletAddress = '';
+            data.connectedWalletType = '';
+            data.showWalletMenu = false;
+        }
+
+        // ২. লাইভ ট্রানজেকশন সিমুলেশন প্রসেস
+        function runLiveTransaction() {
+            const data = document.querySelector('body').__x.$data;
+            if (!data.swapAmount || data.swapAmount <= 0) {
+                alert("দয়া করে একটি সঠিক পরিমাণ ইনপুট দিন!");
+                return;
+            }
+
+            data.isSwapping = true;
+            
+            setTimeout(() => { data.swapStep = "1/4 Requesting Wallet Signature..."; }, 0);
+            setTimeout(() => { data.swapStep = "2/4 Matching order in Off-chain Dark Pool..."; }, 2000);
+            setTimeout(() => { data.swapStep = "3/4 Routing Zero-Knowledge Proof to Solana..."; }, 4500);
+            setTimeout(() => { data.swapStep = "4/4 Confirming Transaction on Solana Block..."; }, 6500);
+            
+            setTimeout(() => {
+                data.isSwapping = false;
+                data.swapAmount = '';
+                alert("🎉 Stealth Swap Successful! Your transaction was finalized privately under 1 second on Solana Network.");
+            }, 8500);
+        }
+
+        // CHART CONFIGURATION
+        const ctx = document.getElementById('privacyChart').getContext('2d');
+        const privacyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Public DEX Loss', 'GoDark Shield'],
+                datasets: [{
+                    data: [350, 50000],
+                    backgroundColor: ['#ef4444', '#00ff66'],
+                    borderRadius: 8
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        document.getElementById('simulatorRange').addEventListener('input', function(e) {
+            const val = parseInt(e.target.value);
+            document.getElementById('rangeValue').innerText = '$' + val.toLocaleString();
+            const loss = (val * 0.007).toFixed(0);
+            document.getElementById('lossValue').innerText = '-$' + parseInt(loss).toLocaleString();
+            privacyChart.data.datasets[0].data = [loss, val];
+            privacyChart.update();
+        });
+    </script>
 </body>
 </html>
