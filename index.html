@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ walletConnected: false, walletAddress: '', connectedWalletType: '', showSwapModal: false, showWalletListModal: false, showSignModal: false, fromToken: 'SOL', toToken: 'USDC', swapAmount: '', showWalletMenu: false, isSwapping: false, swapStep: '' }">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoDark | Premium Privacy DEX</title>
     
-    <!-- Tailwind CSS & Google Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for Interactive Privacy Simulator -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -42,9 +38,48 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="text-gray-200 font-sans gradient-mesh min-h-screen antialiased">
+<body class="text-gray-200 font-sans gradient-mesh min-h-screen antialiased" 
+      x-data="{ 
+          walletConnected: false, 
+          walletAddress: '', 
+          connectedWalletType: '', 
+          showSwapModal: false, 
+          showWalletListModal: false, 
+          showSignModal: false, 
+          fromToken: 'SOL', 
+          toToken: 'USDC', 
+          swapAmount: '', 
+          showWalletMenu: false, 
+          isSwapping: false, 
+          swapStep: '',
+          
+          triggerSignPrompt(walletType) {
+              this.showWalletListModal = false;
+              this.connectedWalletType = walletType;
+              setTimeout(() => {
+                  this.showSignModal = true;
+              }, 300);
+          },
+          
+          approveWalletSignature() {
+              let fakeAddresses = {
+                  phantom: 'Phan7x...8K9q',
+                  bitget: 'BitG88...2wYt',
+                  solflare: 'SolF12...4mNp'
+              };
+              this.showSignModal = false;
+              this.walletConnected = true;
+              this.walletAddress = fakeAddresses[this.connectedWalletType] || '0xWallet...7f43';
+          },
+          
+          disconnectSolanaWallet() {
+              this.walletConnected = false;
+              this.walletAddress = '';
+              this.connectedWalletType = '';
+              this.showWalletMenu = false;
+          }
+      }">
 
-    <!-- PREMIUM NAVBAR -->
     <nav class="border-b border-gray-800/60 bg-darkBg/80 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <a href="https://godarkdex.com/" class="flex items-center space-x-2 group">
@@ -57,7 +92,6 @@
                 <a href="#simulator" class="hover:text-white transition-colors">MEV Shield</a>
             </div>
 
-            <!-- Multi-Wallet Connection Container -->
             <div class="relative">
                 <button x-show="!walletConnected" @click="showWalletListModal = true" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
                     <i class="fa-solid fa-wallet"></i>
@@ -81,7 +115,6 @@
         </div>
     </nav>
 
-    <!-- MAIN CONSOLE -->
     <main class="max-w-7xl mx-auto px-6 pt-12 pb-24 grid lg:grid-cols-12 gap-12 items-center" id="swap-console">
         
         <div class="lg:col-span-7 space-y-6">
@@ -98,7 +131,6 @@
             </p>
         </div>
 
-        <!-- Swap UI Container -->
         <div class="lg:col-span-5 bg-darkCard border border-gray-800/80 p-6 rounded-3xl glow-green relative">
             <div x-show="isSwapping" class="absolute inset-0 bg-darkCard/95 rounded-3xl z-30 flex flex-col items-center justify-center p-6 text-center" x-cloak>
                 <div class="w-16 h-16 border-4 border-neonGreen/20 border-t-neonGreen rounded-full animate-spin mb-6"></div>
@@ -112,7 +144,6 @@
                 <button class="text-gray-500 hover:text-white transition-colors text-sm"><i class="fa-solid fa-gear"></i></button>
             </div>
 
-            <!-- From Token -->
             <div class="bg-darkBg border border-gray-800 rounded-2xl p-4 space-y-2 mb-3">
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>You Pay</span>
@@ -127,14 +158,12 @@
                 </div>
             </div>
 
-            <!-- Swap Switch -->
             <div class="absolute left-1/2 transform -translate-x-1/2 -translate-y-5 z-10">
                 <button @click="let tmp = fromToken; fromToken = toToken; toToken = tmp;" class="bg-gray-900 border-2 border-gray-800 w-9 h-9 rounded-xl flex items-center justify-center text-neonGreen hover:text-white transition-all">
                     <i class="fa-solid fa-arrow-down-up-organizing text-xs"></i>
                 </button>
             </div>
 
-            <!-- To Token -->
             <div class="bg-darkBg border border-gray-800 rounded-2xl p-4 space-y-2 mt-4 mb-6">
                 <div class="flex justify-between text-xs text-gray-500">
                     <span>You Receive (Estimated)</span>
@@ -148,7 +177,6 @@
                 </div>
             </div>
 
-            <!-- Swap Action Control -->
             <button x-show="!walletConnected" @click="showWalletListModal = true" class="w-full bg-neonGreen text-black font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center">
                 Connect Wallet to Trade
             </button>
@@ -158,7 +186,6 @@
         </div>
     </main>
 
-    <!-- MULTI-WALLET MODAL WITH BITGET -->
     <div x-show="showWalletListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" x-cloak>
         <div @click.away="showWalletListModal = false" class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-md p-6 space-y-5">
             <div class="flex justify-between items-center border-b border-gray-800/60 pb-3">
@@ -167,7 +194,6 @@
             </div>
             
             <div class="space-y-3">
-                <!-- Phantom -->
                 <button @click="triggerSignPrompt('phantom')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-purple-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
                     <div class="flex items-center space-x-4">
                         <div class="w-10 h-10 rounded-xl bg-purple-600/20 border-2 border-purple-500 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-lg">
@@ -178,7 +204,6 @@
                     <span class="text-xs font-mono bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Detected</span>
                 </button>
 
-                <!-- Bitget Wallet (NEW) -->
                 <button @click="triggerSignPrompt('bitget')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-yellow-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
                     <div class="flex items-center space-x-4">
                         <div class="w-10 h-10 rounded-xl bg-yellow-600/20 border-2 border-yellow-500 flex items-center justify-center text-yellow-500 group-hover:bg-yellow-500 group-hover:text-black transition-all shadow-lg">
@@ -189,7 +214,6 @@
                     <span class="text-xs font-mono bg-yellow-500/10 text-yellow-500 px-2.5 py-1 rounded-lg border border-yellow-500/20">Popular</span>
                 </button>
 
-                <!-- Solflare -->
                 <button @click="triggerSignPrompt('solflare')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-orange-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
                     <div class="flex items-center space-x-4">
                         <div class="w-10 h-10 rounded-xl bg-orange-600/20 border-2 border-orange-500 flex items-center justify-center text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-lg">
@@ -203,9 +227,8 @@
         </div>
     </div>
 
-    <!-- REALISTIC WALLET SIGN/SIGN-UP MESSAGE REQUEST POP-UP -->
     <div x-show="showSignModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm" x-cloak>
-        <div class="bg-[#0c0f1d] border border-gray-800 rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-4">
+        <div @click.away="showSignModal = false" class="bg-[#0c0f1d] border border-gray-800 rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-gray-800/60 pb-3">
                 <div class="flex items-center space-x-2">
                     <div class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
@@ -235,7 +258,6 @@
         </div>
     </div>
 
-    <!-- FOOTER WITH DYNAMIC VERIFIED LINKS -->
     <footer class="border-t border-gray-900 bg-darkBg/60 px-6 py-12 text-center" id="analytics">
         <div class="max-w-7xl mx-auto space-y-6">
             <a href="https://godarkdex.com/" class="text-xl font-bold text-white tracking-wide inline-block hover:text-neonGreen transition-colors">Go<span class="text-neonGreen">Dark</span></a>
@@ -249,47 +271,7 @@
         </div>
     </footer>
 
-    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
     <script>
-        let selectedTypeBackup = '';
-
-        // ইউজার ওয়ালেটে ক্লিক করলেই এই ফাংশনটি রিয়েল সাইন পপ-আপ আনবে
-        function triggerSignPrompt(walletType) {
-            const data = document.querySelector('body').__x.$data;
-            data.showWalletListModal = false;
-            selectedTypeBackup = walletType;
-            data.connectedWalletType = walletType;
-            
-            // সাইন আপ ইন্টারফেস/পপ-আপ প্রদর্শন
-            setTimeout(() => {
-                data.showSignModal = true;
-            }, 200);
-        }
-
-        // ইউজার যখন সাইন/কনফার্ম বাটনে চাপ দেবে তখন ওয়ালেট কানেক্ট সফল হবে
-        function approveWalletSignature() {
-            let fakeAddresses = {
-                phantom: "Phan7x...8K9q",
-                bitget: "BitG88...2wYt",
-                solflare: "SolF12...4mNp"
-            };
-
-            const data = document.querySelector('body').__x.$data;
-            data.showSignModal = false;
-            
-            // ডাটা স্টেট পরিবর্তন (যার ফলে সিলেক্ট ওয়ালেট বাটনটি হারিয়ে যাবে)
-            data.walletConnected = true;
-            data.walletAddress = fakeAddresses[selectedTypeBackup];
-        }
-
-        function disconnectSolanaWallet() {
-            const data = document.querySelector('body').__x.$data;
-            data.walletConnected = false;
-            data.walletAddress = '';
-            data.connectedWalletType = '';
-            data.showWalletMenu = false;
-        }
-
         function runLiveTransaction() {
             const data = document.querySelector('body').__x.$data;
             if (!data.swapAmount || data.swapAmount <= 0) {
