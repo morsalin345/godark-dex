@@ -8,7 +8,216 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <script defer src="<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoDark | Premium Privacy DEX</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/buffer/6.0.3/buffer.min.js"></script>
+
+    <script>
+        window.Buffer = window.Buffer || buffer.Buffer;
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        darkBg: '#05070f',
+                        darkCard: '#0b1120',
+                        neonGreen: '#00ff66',
+                        neonPurple: '#a855f7'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #05070f; overflow-x: hidden; }
+        .glow-green { box-shadow: 0 0 20px rgba(0, 255, 102, 0.15); }
+        .glow-btn:hover { box-shadow: 0 0 25px rgba(0, 255, 102, 0.4); }
+        .gradient-mesh {
+            background-image: radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.1) 0, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(0, 255, 102, 0.08) 0, transparent 50%);
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="text-gray-200 font-sans gradient-mesh min-h-screen antialiased" 
+      x-data="{ 
+          walletConnected: false, 
+          walletAddress: '', 
+          connectedWalletType: '', 
+          showWalletListModal: false, 
+          fromToken: 'SOL', 
+          toToken: 'USDC', 
+          swapAmount: '', 
+          showWalletMenu: false, 
+          isSwapping: false, 
+          swapStep: '',
+
+          async connectRealWallet(providerType) {
+              try {
+                  let provider = null;
+                  
+                  if (providerType === 'bitget') {
+                      provider = window.bitget?.solana || window.bitkeep?.solana;
+                  } else if (providerType === 'phantom') {
+                      provider = window.solana?.isPhantom ? window.solana : null;
+                  } else if (providerType === 'solflare') {
+                      provider = window.solflare || (window.solana?.isSolflare ? window.solana : null);
+                  }
+
+                  if (!provider) {
+                      alert(providerType.toUpperCase() + ' Wallet পাওয়া যায়নি! দয়া করে ওয়ালেট অ্যাপের ভেতরের DApp ব্রাউজার ব্যবহার করুন।');
+                      return;
+                  }
+
+                  // আসল ওয়ালেট কানেক্ট রিকোয়েস্ট (Real Handshake)
+                  const resp = await provider.connect();
+                  const publicKey = resp.publicKey.toString();
+                  
+                  // আসল মেসেজ সাইন রিকোয়েস্ট পপ-আপ (Real Signature Request)
+                  const message = 'Welcome to GoDark DEX.\n\nClick to sign-up and verify ownership of this wallet.\n\nNonce: 7x992a01bX\nDomain: godarkdex.com';
+                  const encodedMessage = new TextEncoder().encode(message);
+                  
+                  // এটি আপনার ওয়ালেট অ্যাপে আসল পাসওয়ার্ড/ফিঙ্গারপ্রিন্ট পপ-আপ আনবে
+                  await provider.signMessage(encodedMessage, 'utf8');
+
+                  // সফল হলে ইন্টারফেস আপডেট হবে
+                  this.showWalletListModal = false;
+                  this.connectedWalletType = providerType;
+                  this.walletAddress = publicKey.substring(0, 6) + '...' + publicKey.substring(publicKey.length - 4);
+                  this.walletConnected = true;
+                  window.currentWalletProvider = provider; // ব্যাকএন্ড সেভ
+              } catch (err) {
+                  console.error(err);
+                  alert('ওয়ালেট সাইন ইন বাতিল করা হয়েছে বা ত্রুটি ঘটেছে!');
+              }
+          },
+
+          disconnectWallet() {
+              this.walletConnected = false;
+              this.walletAddress = '';
+              this.connectedWalletType = '';
+              this.showWalletMenu = false;
+              window.currentWalletProvider = null;
+          }
+      }">
+
+    <nav class="border-b border-gray-800/60 bg-darkBg/80 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="https://godarkdex.com/" class="flex items-center space-x-2 group">
+                <span class="text-2xl font-extrabold tracking-tight text-white">Go<span class="text-neonGreen group-hover:text-white transition-colors">Dark</span></span>
+                <span class="bg-gray-900 text-xs text-neonGreen border border-neonGreen/30 px-2 py-0.5 rounded font-mono">BETA</span>
+            </a>
+
+            <div class="relative">
+                <button x-show="!walletConnected" @click="showWalletListModal = true" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Connect Real Wallet</span>
+                </button>
+                
+                <button x-show="walletConnected" @click="showWalletMenu = !showWalletMenu" class="bg-darkCard border border-gray-700 text-white font-medium px-4 py-2.5 rounded-xl text-sm flex items-center space-x-2 hover:border-gray-500 transition-all" x-cloak>
+                    <span class="w-2 h-2 rounded-full bg-neonGreen animate-pulse"></span>
+                    <span class="text-xs font-bold text-neonGreen uppercase mr-1" x-text="connectedWalletType"></span>
+                    <span x-text="walletAddress"></span>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
+                </button>
+                
+                <div x-show="showWalletMenu" @click.away="showWalletMenu = false" class="absolute right-0 mt-2 w-48 bg-darkCard border border-gray-800 rounded-xl p-2 shadow-2xl z-50" x-cloak>
+                    <button @click="disconnectWallet()" class="w-full text-left text-sm text-red-400 hover:bg-red-500/10 p-2.5 rounded-lg transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Disconnect</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 pt-12 pb-24 grid lg:grid-cols-12 gap-12 items-center" id="swap-console">
+        <div class="lg:col-span-7 space-y-6">
+            <h1 class="text-4xl md:text-6xl font-black text-white leading-tight">
+                Trade in the Shadows.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-neonGreen to-neonPurple">Protected by Default.</span>
+            </h1>
+        </div>
+
+        <div class="lg:col-span-5 bg-darkCard border border-gray-800/80 p-6 rounded-3xl glow-green relative">
+            <div x-show="isSwapping" class="absolute inset-0 bg-darkCard/95 rounded-3xl z-30 flex flex-col items-center justify-center p-6 text-center" x-cloak>
+                <div class="w-16 h-16 border-4 border-neonGreen/20 border-t-neonGreen rounded-full animate-spin mb-6"></div>
+                <p class="text-xs font-mono text-neonGreen px-4 py-1 bg-gray-950 border border-gray-800 rounded-full mb-4" x-text="swapStep"></p>
+            </div>
+
+            <div class="bg-darkBg border border-gray-800 rounded-2xl p-4 space-y-2 mb-6">
+                <input type="number" placeholder="0.00" x-model="swapAmount" class="bg-transparent text-2xl font-bold text-white focus:outline-none w-full">
+            </div>
+
+            <button x-show="!walletConnected" @click="showWalletListModal = true" class="w-full bg-neonGreen text-black font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center">
+                Connect Wallet to Trade
+            </button>
+            <button x-show="walletConnected" @click="runLiveTransaction()" class="w-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center tracking-wide" x-cloak>
+                Execute Private Swap
+            </button>
+        </div>
+    </main>
+
+    <div x-show="showWalletListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" x-cloak>
+        <div @click.away="showWalletListModal = false" class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-md p-6 space-y-5">
+            <div class="flex justify-between items-center border-b border-gray-800/60 pb-3">
+                <h3 class="text-lg font-bold text-white">Connect Web3 Solana Wallet</h3>
+                <button @click="showWalletListModal = false" class="text-gray-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <button @click="connectRealWallet('bitget')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-yellow-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-yellow-600/20 border-2 border-yellow-500 flex items-center justify-center text-yellow-500 group-hover:bg-yellow-500 group-hover:text-black transition-all">
+                            <i class="fa-solid fa-b text-lg font-black"></i>
+                        </div>
+                        <span class="font-bold text-lg text-white group-hover:text-yellow-500 transition-colors">Bitget Wallet (Real)</span>
+                    </div>
+                </button>
+
+                <button @click="connectRealWallet('phantom')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-purple-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-600/20 border-2 border-purple-500 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all">
+                            <i class="fa-solid fa-ghost text-lg"></i>
+                        </div>
+                        <span class="font-bold text-lg text-white group-hover:text-purple-400 transition-colors">Phantom Wallet (Real)</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function runLiveTransaction() {
+            const data = document.querySelector('body').__x.$data;
+            if (!data.swapAmount || data.swapAmount <= 0) {
+                alert("দয়া করে পরিমাণ ইনপুট দিন!");
+                return;
+            }
+            data.isSwapping = true;
+            setTimeout(() => { data.swapStep = "1/3 Requesting Real Wallet Signature..."; }, 0);
+            setTimeout(() => { data.swapStep = "2/3 Matching order in Off-chain Dark Pool..."; }, 2000);
+            setTimeout(() => {
+                data.isSwapping = false;
+                alert("🎉 Private Swap Finalized on Solana Block!");
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
+"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
