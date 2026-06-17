@@ -1,1 +1,70 @@
 
+:root {
+    --neonGreen: #00ff66;
+    --neonPurple: #a855f7;
+    --darkBg: #03050a;
+}
+
+body {
+    background-color: var(--darkBg);
+    overflow-x: hidden;
+    position: relative;
+}
+
+.bg-grid {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
+}
+
+@keyframes floatParticles {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+    50% { opacity: 0.25; }
+    100% { transform: translateY(-130px) rotate(360deg); opacity: 0; }
+}
+
+.particle {
+    position: absolute;
+    background: radial-gradient(circle, rgba(0,255,102,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: floatParticles 9s infinite linear;
+}
+
+@keyframes borderGlow {
+    0%, 100% { 
+        border-color: rgba(0, 255, 102, 0.25); 
+        box-shadow: 0 0 25px rgba(0, 255, 102, 0.04); 
+    }
+    50% { 
+        border-color: rgba(168, 85, 247, 0.35); 
+        box-shadow: 0 0 35px rgba(168, 85, 247, 0.12); 
+    }
+}
+.animated-card {
+    animation: borderGlow 6s infinite ease-in-out;
+    border-width: 1px;
+}
+
+.glow-btn:hover {
+    box-shadow: 0 0 30px rgba(0, 255, 102, 0.45);
+    transform: translateY(-1px);
+}
+
+.text-neonGreen { color: var(--neonGreen); }
+.border-neonGreen\/20 { border-color: rgba(0, 255, 102, 0.2); }
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 102, 0.2);
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 102, 0.5);
+}
