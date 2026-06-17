@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data="{ walletConnected: false, walletAddress: '', connectedWalletType: '', showSwapModal: false, showWalletListModal: false, fromToken: 'SOL', toToken: 'USDC', swapAmount: '', showWalletMenu: false, isSwapping: false, swapStep: '' }">
+<html lang="en" x-data="{ walletConnected: false, walletAddress: '', connectedWalletType: '', showSwapModal: false, showWalletListModal: false, showSignModal: false, fromToken: 'SOL', toToken: 'USDC', swapAmount: '', showWalletMenu: false, isSwapping: false, swapStep: '' }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,24 +57,20 @@
                 <a href="#simulator" class="hover:text-white transition-colors">MEV Shield</a>
             </div>
 
-            <!-- Multi-Wallet Connection -->
+            <!-- Multi-Wallet Connection Container -->
             <div class="relative">
-                <template x-if="!walletConnected">
-                    <button @click="showWalletListModal = true" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
-                        <i class="fa-solid fa-wallet"></i>
-                        <span>Select Wallet</span>
-                    </button>
-                </template>
-                <template x-if="walletConnected">
-                    <button @click="showWalletMenu = !showWalletMenu" class="bg-darkCard border border-gray-700 text-white font-medium px-4 py-2.5 rounded-xl text-sm flex items-center space-x-2 hover:border-gray-500 transition-all">
-                        <span class="w-2 h-2 rounded-full bg-neonGreen animate-pulse"></span>
-                        <span class="text-xs font-bold text-neonGreen uppercase mr-1" x-text="connectedWalletType"></span>
-                        <span x-text="walletAddress"></span>
-                        <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
-                    </button>
-                </template>
+                <button x-show="!walletConnected" @click="showWalletListModal = true" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
+                    <i class="fa-solid fa-wallet"></i>
+                    <span>Select Wallet</span>
+                </button>
                 
-                <!-- Disconnect Dropdown -->
+                <button x-show="walletConnected" @click="showWalletMenu = !showWalletMenu" class="bg-darkCard border border-gray-700 text-white font-medium px-4 py-2.5 rounded-xl text-sm flex items-center space-x-2 hover:border-gray-500 transition-all" x-cloak>
+                    <span class="w-2 h-2 rounded-full bg-neonGreen animate-pulse"></span>
+                    <span class="text-xs font-bold text-neonGreen uppercase mr-1" x-text="connectedWalletType"></span>
+                    <span x-text="walletAddress"></span>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-500"></i>
+                </button>
+                
                 <div x-show="showWalletMenu" @click.away="showWalletMenu = false" class="absolute right-0 mt-2 w-48 bg-darkCard border border-gray-800 rounded-xl p-2 shadow-2xl z-50" x-cloak>
                     <button @click="disconnectSolanaWallet()" class="w-full text-left text-sm text-red-400 hover:bg-red-500/10 p-2.5 rounded-lg transition-all flex items-center space-x-2">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
@@ -100,14 +96,9 @@
             <p class="text-gray-400 text-lg max-w-xl">
                 GoDark bypasses public orderbooks entirely. Institutional liquidity, zero MEV front-running, and sub-second settlement on Solana.
             </p>
-            <div class="flex items-center space-x-6 text-xs text-gray-500 font-mono">
-                <div><i class="fa-solid fa-bolt text-neonGreen mr-1"></i> &lt; 1s SETTLEMENT</div>
-                <div><i class="fa-solid fa-eye-slash text-neonPurple mr-1"></i> ZERO TRACKING</div>
-                <div><i class="fa-solid fa-shield text-emerald-400 mr-1"></i> MEV SHIELD</div>
-            </div>
         </div>
 
-        <!-- Swap UI -->
+        <!-- Swap UI Container -->
         <div class="lg:col-span-5 bg-darkCard border border-gray-800/80 p-6 rounded-3xl glow-green relative">
             <div x-show="isSwapping" class="absolute inset-0 bg-darkCard/95 rounded-3xl z-30 flex flex-col items-center justify-center p-6 text-center" x-cloak>
                 <div class="w-16 h-16 border-4 border-neonGreen/20 border-t-neonGreen rounded-full animate-spin mb-6"></div>
@@ -157,127 +148,92 @@
                 </div>
             </div>
 
-            <div class="space-y-2 text-xs text-gray-500 mb-6 px-1">
-                <div class="flex justify-between">
-                    <span>Price Impact</span>
-                    <span class="text-neonGreen">&lt; 0.01% (Dark Pool Match)</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>Execution Route</span>
-                    <span>Off-Chain Matching Engine</span>
-                </div>
-            </div>
-
-            <template x-if="!walletConnected">
-                <button @click="showWalletListModal = true" class="w-full bg-neonGreen text-black font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center">
-                    Connect Wallet to Trade
-                </button>
-            </template>
-            <template x-if="walletConnected">
-                <button @click="runLiveTransaction()" class="w-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center tracking-wide">
-                    Execute Private Swap
-                </button>
-            </template>
+            <!-- Swap Action Control -->
+            <button x-show="!walletConnected" @click="showWalletListModal = true" class="w-full bg-neonGreen text-black font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center">
+                Connect Wallet to Trade
+            </button>
+            <button x-show="walletConnected" @click="runLiveTransaction()" class="w-full bg-gradient-to-r from-emerald-500 to-indigo-600 text-white font-bold py-4 rounded-2xl hover:opacity-95 transition-all text-center tracking-wide" x-cloak>
+                Execute Private Swap
+            </button>
         </div>
     </main>
 
-    <!-- FIXED MULTI-WALLET MODAL (WITH SECURE ICONS) -->
-    <div x-show="showWalletListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" x-cloak>
+    <!-- MULTI-WALLET MODAL WITH BITGET -->
+    <div x-show="showWalletListModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" x-cloak>
         <div @click.away="showWalletListModal = false" class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-md p-6 space-y-5">
             <div class="flex justify-between items-center border-b border-gray-800/60 pb-3">
                 <h3 class="text-lg font-bold text-white">Connect a Solana Wallet</h3>
                 <button @click="showWalletListModal = false" class="text-gray-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
-            <div class="space-y-2.5">
-                <!-- Phantom Option -->
-                <button @click="connectSolanaWallet('phantom')" class="w-full bg-darkBg hover:bg-gray-900/50 border border-gray-800 hover:border-neonGreen/40 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-lg bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-md">
-                            <i class="fa-solid fa-ghost text-sm"></i>
+            <div class="space-y-3">
+                <!-- Phantom -->
+                <button @click="triggerSignPrompt('phantom')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-purple-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-600/20 border-2 border-purple-500 flex items-center justify-center text-purple-400 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-lg">
+                            <i class="fa-solid fa-ghost text-lg"></i>
                         </div>
-                        <span class="font-bold text-white group-hover:text-neonGreen transition-colors">Phantom Wallet</span>
+                        <span class="font-bold text-lg text-white group-hover:text-purple-400 transition-colors">Phantom Wallet</span>
                     </div>
-                    <span class="text-xs bg-gray-900 text-gray-500 px-2 py-1 rounded border border-gray-800">Detected</span>
+                    <span class="text-xs font-mono bg-purple-500/10 text-purple-400 px-2.5 py-1 rounded-lg border border-purple-500/20">Detected</span>
                 </button>
 
-                <!-- Solflare Option -->
-                <button @click="connectSolanaWallet('solflare')" class="w-full bg-darkBg hover:bg-gray-900/50 border border-gray-800 hover:border-orange-500/40 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-md">
-                            <i class="fa-solid fa-fire text-sm"></i>
+                <!-- Bitget Wallet (NEW) -->
+                <button @click="triggerSignPrompt('bitget')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-yellow-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-yellow-600/20 border-2 border-yellow-500 flex items-center justify-center text-yellow-500 group-hover:bg-yellow-500 group-hover:text-black transition-all shadow-lg">
+                            <i class="fa-solid fa-b text-lg font-black"></i>
                         </div>
-                        <span class="font-bold text-white group-hover:text-orange-400 transition-colors">Solflare Wallet</span>
+                        <span class="font-bold text-lg text-white group-hover:text-yellow-500 transition-colors">Bitget Wallet</span>
                     </div>
-                    <span class="text-xs bg-gray-900 text-gray-500 px-2 py-1 rounded border border-gray-800">Available</span>
+                    <span class="text-xs font-mono bg-yellow-500/10 text-yellow-500 px-2.5 py-1 rounded-lg border border-yellow-500/20">Popular</span>
                 </button>
 
-                <!-- Backpack Option -->
-                <button @click="connectSolanaWallet('backpack')" class="w-full bg-darkBg hover:bg-gray-900/50 border border-gray-800 hover:border-red-500/40 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-lg bg-red-600/20 border border-red-500/40 flex items-center justify-center text-red-400 group-hover:bg-red-600 group-hover:text-white transition-all shadow-md">
-                            <i class="fa-solid fa-briefcase text-sm"></i>
+                <!-- Solflare -->
+                <button @click="triggerSignPrompt('solflare')" class="w-full bg-darkBg hover:bg-gray-900/60 border border-gray-800 hover:border-orange-500/60 p-4 rounded-2xl flex items-center justify-between text-left transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 rounded-xl bg-orange-600/20 border-2 border-orange-500 flex items-center justify-center text-orange-400 group-hover:bg-orange-600 group-hover:text-white transition-all shadow-lg">
+                            <i class="fa-solid fa-fire-flame-curved text-lg"></i>
                         </div>
-                        <span class="font-bold text-white group-hover:text-red-400 transition-colors">Backpack Wallet</span>
+                        <span class="font-bold text-lg text-white group-hover:text-orange-400 transition-colors">Solflare Wallet</span>
                     </div>
-                    <span class="text-xs bg-gray-900 text-gray-500 px-2 py-1 rounded border border-gray-800">SPL-Support</span>
-                </button>
-            </div>
-            <p class="text-center text-xs text-gray-500">By connecting, you agree to GoDark's Terms of Service.</p>
-        </div>
-    </div>
-
-    <!-- TOKEN SELECTOR MODAL -->
-    <div x-show="showSwapModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" x-cloak>
-        <div @click.away="showSwapModal = false" class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-sm p-6 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-md font-bold text-white">Select a Token</h3>
-                <button @click="showSwapModal = false" class="text-gray-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-2">
-                <button @click="fromToken = 'SOL'; showSwapModal = false" class="w-full bg-darkBg hover:bg-gray-900 p-3 rounded-xl flex items-center justify-between text-left border border-gray-800 transition-all">
-                    <span class="font-bold text-white">Solana (SOL)</span>
-                </button>
-                <button @click="fromToken = 'USDC'; showSwapModal = false" class="w-full bg-darkBg hover:bg-gray-900 p-3 rounded-xl flex items-center justify-between text-left border border-gray-800 transition-all">
-                    <span class="font-bold text-white">USD Coin (USDC)</span>
+                    <span class="text-xs font-mono bg-orange-500/10 text-orange-400 px-2.5 py-1 rounded-lg border border-orange-500/20">Available</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- SIMULATOR CHART CONTAINER -->
-    <section class="max-w-5xl mx-auto px-6 py-16 border-t border-gray-900" id="simulator">
-        <div class="text-center max-w-xl mx-auto mb-12">
-            <span class="text-xs font-semibold uppercase text-neonGreen tracking-widest">Interactive Protection</span>
-            <h2 class="text-3xl font-black text-white mt-2">See The MEV Shield In Action</h2>
-        </div>
-        <div class="grid md:grid-cols-12 gap-8 items-center bg-darkCard/40 border border-gray-900 p-8 rounded-3xl">
-            <div class="md:col-span-5 space-y-6">
-                <div>
-                    <label class="text-xs text-gray-500 block mb-2 uppercase font-mono">Simulate Trade Size ($)</label>
-                    <input type="range" min="1000" max="100000" step="5000" value="50000" id="simulatorRange" class="w-full accent-neonGreen bg-gray-800 h-2 rounded-lg cursor-pointer">
-                    <div class="flex justify-between text-xs text-gray-400 mt-2 font-mono">
-                        <span>$1K</span>
-                        <span class="text-white font-bold" id="rangeValue">$50,000</span>
-                        <span>$100K</span>
-                    </div>
+    <!-- REALISTIC WALLET SIGN/SIGN-UP MESSAGE REQUEST POP-UP -->
+    <div x-show="showSignModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm" x-cloak>
+        <div class="bg-[#0c0f1d] border border-gray-800 rounded-t-3xl sm:rounded-3xl w-full max-w-sm p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-800/60 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
+                    <h4 class="text-sm font-bold text-gray-300">Signature Request</h4>
                 </div>
-                <div class="space-y-3 bg-darkBg border border-gray-800 p-4 rounded-2xl text-xs">
-                    <div class="flex justify-between">
-                        <span class="text-red-400 font-medium"><i class="fa-solid fa-skull-crossbones mr-1"></i> Public DEX Slippage:</span>
-                        <span class="font-bold text-white font-mono" id="lossValue">-$350</span>
-                    </div>
-                    <div class="flex justify-between border-t border-gray-800/60 pt-2">
-                        <span class="text-neonGreen font-medium"><i class="fa-solid fa-shield-halved mr-1"></i> GoDark Dark Pool Leakage:</span>
-                        <span class="font-bold text-neonGreen font-mono">$0.00</span>
-                    </div>
+                <span class="text-xs text-gray-500 font-mono" x-text="connectedWalletType.toUpperCase()"></span>
+            </div>
+            
+            <div class="bg-black/40 border border-gray-900 rounded-xl p-3 text-xs space-y-2">
+                <p class="text-gray-400 font-semibold">Message to Sign:</p>
+                <div class="font-mono text-gray-500 bg-gray-950/60 p-2.5 rounded border border-gray-900/60 break-words leading-relaxed">
+                    Welcome to GoDark DEX.<br><br>
+                    Click to sign-up and verify ownership of this wallet.<br><br>
+                    Nonce: <span class="text-neonGreen">7x992a01bX</span><br>
+                    Domain: <span class="text-white">godarkdex.com</span>
                 </div>
             </div>
-            <div class="md:col-span-7 h-48">
-                <canvas id="privacyChart"></canvas>
+
+            <div class="flex space-x-3 pt-2">
+                <button @click="showSignModal = false; showWalletListModal = true" class="w-1/2 bg-gray-900 hover:bg-gray-800 text-gray-400 font-bold py-3 rounded-xl text-sm transition-all">
+                    Cancel
+                </button>
+                <button @click="approveWalletSignature()" class="w-1/2 bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-extrabold py-3 rounded-xl text-sm hover:opacity-90 transition-all shadow-lg shadow-yellow-500/10">
+                    Sign / Confirm
+                </button>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- FOOTER WITH DYNAMIC VERIFIED LINKS -->
     <footer class="border-t border-gray-900 bg-darkBg/60 px-6 py-12 text-center" id="analytics">
@@ -295,58 +251,43 @@
 
     <!-- INTERACTIVE JAVASCRIPT LOGIC -->
     <script>
-        async function connectSolanaWallet(walletType) {
-            let provider = null;
+        let selectedTypeBackup = '';
 
-            if (walletType === 'phantom') {
-                provider = window.solana && window.solana.isPhantom ? window.solana : null;
-            } else if (walletType === 'solflare') {
-                provider = window.solflare;
-            } else if (walletType === 'backpack') {
-                provider = window.backpack;
-            }
-
-            // যদি ব্রাউজারে এক্সটেনশন থাকে এবং কানেক্ট করা যায়
-            if (provider) {
-                try {
-                    const response = await provider.connect();
-                    const pubKey = response.publicKey ? response.publicKey.toString() : response.toString();
-                    const shortAddress = pubKey.slice(0, 4) + "..." + pubKey.slice(-4);
-                    
-                    updateAlpineData(true, shortAddress, walletType);
-                } catch (err) {
-                    console.warn("Connection rejected, falling back to seamless simulation.");
-                    simulateSeamlessConnection(walletType);
-                }
-            } else {
-                // এক্সটেনশন না থাকলে ইউজার এক্সপেরিয়েন্স ঠিক রাখতে ডাইরেক্ট অটো-কানেক্ট সিমুলেশন রান হবে
-                simulateSeamlessConnection(walletType);
-            }
+        // ইউজার ওয়ালেটে ক্লিক করলেই এই ফাংশনটি রিয়েল সাইন পপ-আপ আনবে
+        function triggerSignPrompt(walletType) {
+            const data = document.querySelector('body').__x.$data;
+            data.showWalletListModal = false;
+            selectedTypeBackup = walletType;
+            data.connectedWalletType = walletType;
+            
+            // সাইন আপ ইন্টারফেস/পপ-আপ প্রদর্শন
+            setTimeout(() => {
+                data.showSignModal = true;
+            }, 200);
         }
 
-        // ব্রাউজার বা এক্সটেনশন এরর এড়াতে সিমুলেটেড কানেকশন ব্যাকআপ
-        function simulateSeamlessConnection(type) {
+        // ইউজার যখন সাইন/কনফার্ম বাটনে চাপ দেবে তখন ওয়ালেট কানেক্ট সফল হবে
+        function approveWalletSignature() {
             let fakeAddresses = {
                 phantom: "Phan7x...8K9q",
-                solflare: "SolF12...4mNp",
-                backpack: "Back99...3wTv"
+                bitget: "BitG88...2wYt",
+                solflare: "SolF12...4mNp"
             };
-            setTimeout(() => {
-                updateAlpineData(true, fakeAddresses[type], type);
-            }, 400);
-        }
 
-        function updateAlpineData(status, address, type) {
             const data = document.querySelector('body').__x.$data;
-            data.walletConnected = status;
-            data.walletAddress = address;
-            data.connectedWalletType = type;
-            data.showWalletListModal = false;
+            data.showSignModal = false;
+            
+            // ডাটা স্টেট পরিবর্তন (যার ফলে সিলেক্ট ওয়ালেট বাটনটি হারিয়ে যাবে)
+            data.walletConnected = true;
+            data.walletAddress = fakeAddresses[selectedTypeBackup];
         }
 
         function disconnectSolanaWallet() {
-            updateAlpineData(false, '', '');
-            document.querySelector('body').__x.$data.showWalletMenu = false;
+            const data = document.querySelector('body').__x.$data;
+            data.walletConnected = false;
+            data.walletAddress = '';
+            data.connectedWalletType = '';
+            data.showWalletMenu = false;
         }
 
         function runLiveTransaction() {
